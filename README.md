@@ -249,7 +249,9 @@ rego.Markdown("# Hello\n\nThis is **markdown** content.")
 
 ## AI Agent Scenarios
 
-Rego is especially suitable for building AI Agent CLIs with built-in Bridge mechanism:
+Rego is especially suitable for building AI Agent CLIs with built-in Bridge mechanism. It handles streaming output and smart scrolling effortlessly:
+
+![Streaming Demo](examples/stream/stream_demo.gif)
 
 ```go
 func AgentUI(c rego.C) rego.Node {
@@ -288,6 +290,7 @@ For more details, see [Agent Bridge Documentation](docs/AGENT_BRIDGE.md).
 | [form](examples/form) | Form, showcases built-in components |
 | [dashboard](examples/dashboard) | Dashboard, complex layouts |
 | [agent](examples/agent) | AI Agent, streaming output |
+| [stream](examples/stream) | Streaming demo with smart scrolling |
 | [markdown](examples/markdown) | Markdown rendering |
 | [gallery](examples/gallery) | Component gallery, all components |
 

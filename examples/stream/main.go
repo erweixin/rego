@@ -8,7 +8,7 @@ import (
 )
 
 // =============================================================================
-// StreamDemo - 一个纯粹展示流式输出和智能滚动的示例
+// StreamDemo - A demo purely showcasing streaming output and smart scrolling
 // =============================================================================
 
 func main() {
@@ -22,7 +22,7 @@ func App(c rego.C) rego.Node {
 	currentStream := rego.Use(c, "currentStream", "")
 	isStreaming := rego.Use(c, "isStreaming", false)
 
-	// 自动开始第一个流式任务
+	// Auto-start the first streaming task
 	rego.UseEffect(c, func() func() {
 		if !isStreaming.Val && len(messages.Val) == 0 {
 			startDemoStream(c, messages, currentStream, isStreaming)
@@ -32,7 +32,7 @@ func App(c rego.C) rego.Node {
 
 	rego.UseKey(c, func(key rego.Key, r rune) {
 		if r == 'r' && !isStreaming.Val {
-			// 按 R 重置并重新开始
+			// Press R to reset and restart
 			messages.Set([]string{})
 			currentStream.Set("")
 			startDemoStream(c, messages, currentStream, isStreaming)
@@ -43,37 +43,37 @@ func App(c rego.C) rego.Node {
 	})
 
 	return rego.VStack(
-		// 顶部标题栏
+		// Top title bar
 		rego.Box(
 			rego.HStack(
 				rego.Text("🚀 REGO STREAMING DEMO").Bold().Color(rego.Cyan),
 				rego.Spacer(),
-				rego.Stats(c.Child("stats")),
+				// rego.Stats(c.Child("stats")),
 				rego.Text(" "),
-				rego.Text(fmt.Sprintf("状态: %s", If(isStreaming.Val, "正在生成...", "就绪"))).
+				rego.Text(fmt.Sprintf("Status: %s", If(isStreaming.Val, "Streaming...", "Ready"))).
 					Color(If(isStreaming.Val, rego.Yellow, rego.Green)),
 			),
 		).Border(rego.BorderSingle).Padding(0, 1),
 
 		rego.Text(""),
 
-		// 主视图区域：展示 StreamView 的核心逻辑
+		// Main view area: showcases the core logic of StreamView
 		rego.TailBox(c.Child("chat-scroll"),
 			rego.Box(
 				rego.VStack(
-					// 已完成的消息历史
+					// Finished message history
 					rego.For(messages.Val, func(msg string, i int) rego.Node {
 						return rego.VStack(
-							rego.Text(fmt.Sprintf("--- 历史消息 #%d ---", i+1)).Dim(),
+							rego.Text(fmt.Sprintf("--- History Message #%d ---", i+1)).Dim(),
 							rego.Markdown(msg),
 							rego.Text(""),
 						)
 					}),
 
-					// 当前正在流出的消息
+					// Current streaming message
 					rego.When(isStreaming.Val || currentStream.Val != "",
 						rego.VStack(
-							rego.Text("--- AI 正在输入 ---").Color(rego.Yellow).Italic(),
+							rego.Text("--- AI is typing ---").Color(rego.Yellow).Italic(),
 							rego.Markdown(currentStream.Val+"▍"),
 						),
 					),
@@ -83,34 +83,34 @@ func App(c rego.C) rego.Node {
 
 		rego.Text(""),
 
-		// 底部操作提示
+		// Bottom operation hints
 		rego.HStack(
-			rego.Text(" [R] 重新运行示例 ").Background(rego.Blue).Color(rego.White),
+			rego.Text(" [R] Restart Demo ").Background(rego.Blue).Color(rego.White),
 			rego.Text("  "),
-			rego.Text(" [Ctrl+C] 退出 ").Background(rego.Gray).Color(rego.White),
+			rego.Text(" Ctrl+C Quit ").Color(rego.White),
 			rego.Spacer(),
-			rego.Text("提示：试着在生成时向上滚动鼠标，跟随会自动停止。滚回底部则恢复。").Dim(),
+			rego.Text("Tip: Try scrolling up during generation").Dim(),
 		),
 	).Padding(1, 2)
 }
 
-// startDemoStream 启动一个模拟的长文本流
+// startDemoStream starts a simulated long text stream
 func startDemoStream(c rego.C, history *rego.State[[]string], current *rego.State[string], status *rego.State[bool]) {
 	status.Set(true)
 	current.Set("")
 
 	go func() {
 		content := `
-## 正在演示智能滚动 (Auto-Tail)
+## Demonstrating Smart Scrolling (Auto-Tail)
 
-当内容在流式增长时，` + "`TailBox`" + ` 会确保你的视口始终跟随最新的 Token。
+When content grows via streaming, ` + "`TailBox`" + ` ensures your viewport always follows the latest tokens.
 
-### 为什么这很重要？
-1. **无需手动滚动**：Agent 输出非常快，手动滚动太累。
-2. **不闪烁**：即使 Markdown 的高度在不断变化，Rego 也能保持稳定。
+### Why is this important?
+1. **No manual scrolling**: Agent output is fast, manual scrolling is exhausting.
+2. **No flickering**: Even if the Markdown height changes constantly, Rego stays stable.
 
-### 复杂内容测试
-下面是一段带高亮的代码块，观察它增加行数时视口的表现：
+### Complex Content Test
+Below is a highlighted code block. Observe the viewport behavior as it grows:
 
 ` + "```go" + `
 package main
@@ -120,38 +120,58 @@ import "fmt"
 func demonstrate() {
     for i := 0; i < 10; i++ {
         fmt.Printf("Token sequence: %d\n", i)
-        // 这里的代码块会不断变长
+        // This code block will keep growing
     }
 }
 ` + "```" + `
 
-### 列表增长
-- 自动生成项 1
-- 自动生成项 2
-- 自动生成项 3
-- 自动生成项 4
-- 自动生成项 5
-- 自动生成项 6
-- 自动生成项 7
-- 自动生成项 8
-- 自动生成项 9
-- 自动生成项 10
+### List Growth
+- Auto-generated item 1
+- Auto-generated item 2
+- Auto-generated item 3
+- Auto-generated item 4
+- Auto-generated item 5
+- Auto-generated item 6
+- Auto-generated item 7
+- Auto-generated item 8
+- Auto-generated item 9
+- Auto-generated item 10
+- Auto-generated item 1
+- Auto-generated item 2
+- Auto-generated item 3
+- Auto-generated item 4
+- Auto-generated item 5
+- Auto-generated item 6
+- Auto-generated item 7
+- Auto-generated item 8
+- Auto-generated item 9
+- Auto-generated item 10
+- Auto-generated item 1
+- Auto-generated item 2
+- Auto-generated item 3
+- Auto-generated item 4
+- Auto-generated item 5
+- Auto-generated item 6
+- Auto-generated item 7
+- Auto-generated item 8
+- Auto-generated item 9
+- Auto-generated item 10
 
-### 总结
-这就是 Rego 的 ` + "`StreamView`" + ` 组件背后的逻辑。
-它让 Agent 开发体验 (DX) 达到了工业级水准。
+### Summary
+This is the logic behind Rego's ` + "`StreamView`" + ` component.
+It brings the Agent Developer Experience (DX) to an industrial grade.
 `
-		// 模拟 Token 逐个流出
+		// Simulate tokens streaming out one by one
 		fullRunes := []rune(content)
 		currentText := ""
 		for _, r := range fullRunes {
 			currentText += string(r)
 			current.Set(currentText)
-			// 模拟随机的 Token 产生速度
+			// Simulate random token generation speed
 			time.Sleep(20 * time.Millisecond)
 		}
 
-		// 完成流，存入历史
+		// Complete stream, save to history
 		time.Sleep(500 * time.Millisecond)
 		history.Update(func(h []string) []string {
 			return append(h, currentText)
@@ -162,7 +182,7 @@ func demonstrate() {
 	}()
 }
 
-// 简单的辅助函数
+// Simple helper function
 func If[T any](cond bool, t, f T) T {
 	if cond {
 		return t

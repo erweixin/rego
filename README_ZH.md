@@ -249,7 +249,9 @@ rego.Markdown("# Hello\n\nThis is **markdown** content.")
 
 ## AI Agent 场景
 
-Rego 特别适合构建 AI Agent CLI，内置 Bridge 机制支持：
+Rego 特别适合构建 AI Agent CLI，内置 Bridge 机制能够完美处理流式输出与智能滚动：
+
+![Streaming Demo](examples/stream/stream_demo.gif)
 
 ```go
 func AgentUI(c rego.C) rego.Node {
@@ -288,6 +290,7 @@ func AgentUI(c rego.C) rego.Node {
 | [form](examples/form) | 表单，展示内置组件 |
 | [dashboard](examples/dashboard) | 仪表盘，复杂布局 |
 | [agent](examples/agent) | AI Agent，流式输出 |
+| [stream](examples/stream) | 流式输出与智能滚动演示 |
 | [markdown](examples/markdown) | Markdown 渲染 |
 | [gallery](examples/gallery) | 组件画廊，全部组件展示 |
 

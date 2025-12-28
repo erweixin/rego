@@ -8,6 +8,10 @@
 
 [English](README.md) | 简体中文
 
+<p align="center">
+  <img src="examples/showcase/showcase_demo.gif" alt="Rego Showcase Demo" width="800">
+</p>
+
 ---
 
 ## 特性
@@ -282,6 +286,7 @@ func AgentUI(c rego.C) rego.Node {
 
 | 示例 | 说明 |
 |------|------|
+| [showcase](examples/showcase) | ⭐ 功能展示，最佳入门示例 |
 | [hello](examples/hello) | 最简单的 Hello World |
 | [counter](examples/counter) | 计数器，展示状态管理 |
 | [todo](examples/todo) | Todo 应用，完整功能演示 |

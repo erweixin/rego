@@ -8,6 +8,10 @@
 
 English | [简体中文](README_ZH.md)
 
+<p align="center">
+  <img src="examples/showcase/showcase_demo.gif" alt="Rego Showcase Demo" width="800">
+</p>
+
 ---
 
 ## Features
@@ -282,6 +286,7 @@ For more details, see [Agent Bridge Documentation](docs/AGENT_BRIDGE.md).
 
 | Example | Description |
 |---------|-------------|
+| [showcase](examples/showcase) | ⭐ Feature showcase, best for getting started |
 | [hello](examples/hello) | Simple Hello World |
 | [counter](examples/counter) | Counter, demonstrates state management |
 | [todo](examples/todo) | Todo app, full feature demo |

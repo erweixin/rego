@@ -852,7 +852,16 @@ func (h *hstackNode) measureWidth(node Node) int {
 		if n.style.width > 0 {
 			total = n.style.width
 		} else {
-			total = 10
+			// 递归测量子节点宽度，加上 padding 和 border
+			childWidth := 0
+			if n.child != nil {
+				childWidth = h.measureWidth(n.child)
+			}
+			borderSize := 0
+			if n.style.border != BorderNone {
+				borderSize = 1
+			}
+			total = childWidth + n.style.paddingLeft + n.style.paddingRight + borderSize*2
 		}
 	case *spacerNode:
 		total = 0
@@ -878,15 +887,7 @@ func (h *hstackNode) measureWidth(node Node) int {
 			if child == nil {
 				continue
 			}
-			// 这里有点循环依赖，简化处理
-			w := 10
-			if tn, ok := child.(*textNode); ok {
-				if tn.style.width > 0 {
-					w = tn.style.width
-				} else {
-					w = runewidth.StringWidth(tn.content)
-				}
-			}
+			w := h.measureWidth(child)
 			if w > maxW {
 				maxW = w
 			}

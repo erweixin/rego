@@ -3,6 +3,8 @@ package rego
 import (
 	"strings"
 	"unicode/utf8"
+
+	"github.com/mattn/go-runewidth"
 )
 
 // =============================================================================
@@ -35,6 +37,50 @@ func TextInput(c C, props TextInputProps) Node {
 		}
 		return nil
 	}, props.Value)
+
+	// 鼠标点击处理
+	UseMouse(c, func(ev MouseEvent) {
+		if ev.Type != MouseEventClick || ev.Button != MouseButtonLeft {
+			return
+		}
+
+		rect := c.Rect()
+		if !rect.Contains(ev.X, ev.Y) {
+			return
+		}
+
+		// 点击时聚焦
+		focus.Focus()
+
+		// 计算文本区域的偏移量
+		// 布局: Box > VStack > [Label?] > Box(border+padding) > content
+		// border: 1, padding: (0, 1)
+		textAreaX := rect.X + 1 + 1 // border + padding
+		textAreaY := rect.Y + 1     // border
+		if props.Label != "" {
+			textAreaY += 1 // Label 占一行
+		}
+
+		// 计算点击的相对位置
+		clickCol := ev.X - textAreaX
+		clickRow := ev.Y - textAreaY
+
+		if clickCol < 0 {
+			clickCol = 0
+		}
+		if clickRow < 0 {
+			clickRow = 0
+		}
+
+		// 根据点击位置计算光标位置
+		displayVal := text.Val
+		if props.Password {
+			displayVal = strings.Repeat("*", utf8.RuneCountInString(text.Val))
+		}
+
+		newPos := calculateCursorPosFromClick(displayVal, clickRow, clickCol)
+		cursorPos.Set(newPos)
+	})
 
 	// 键盘处理
 	UseKey(c, func(key Key, r rune) {
@@ -208,6 +254,44 @@ func TextInput(c C, props TextInputProps) Node {
 				Height(boxHeight),
 		),
 	).Width(props.Width))
+}
+
+// 辅助函数：根据点击的行列计算光标位置
+func calculateCursorPosFromClick(text string, clickRow, clickCol int) int {
+	lines := strings.Split(text, "\n")
+
+	// 限制行号范围
+	if clickRow < 0 {
+		clickRow = 0
+	}
+	if clickRow >= len(lines) {
+		clickRow = len(lines) - 1
+	}
+
+	// 计算点击行之前所有字符的数量（包括换行符）
+	pos := 0
+	for i := 0; i < clickRow; i++ {
+		pos += utf8.RuneCountInString(lines[i]) + 1 // +1 for '\n'
+	}
+
+	// 在当前行中根据显示宽度找到对应的字符位置
+	line := lines[clickRow]
+	lineRunes := []rune(line)
+	currentWidth := 0
+
+	for i, r := range lineRunes {
+		charWidth := runewidth.RuneWidth(r)
+		// 如果点击位置在当前字符的范围内
+		if currentWidth+charWidth > clickCol {
+			pos += i
+			return pos
+		}
+		currentWidth += charWidth
+	}
+
+	// 点击在行尾之后，光标放在行尾
+	pos += len(lineRunes)
+	return pos
 }
 
 // 辅助函数：计算上一行对应位置
